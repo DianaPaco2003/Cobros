@@ -6,8 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 class DetalleVenta extends Model
 {
-    //
-    use HasFactory;
+        use HasFactory;
 
     public $timestamps = false;
 
@@ -30,4 +29,9 @@ class DetalleVenta extends Model
     {
         return $this->belongsTo(Producto::class);
     }
+
+//    public function getSubtotalAttribute()
+ //   {
+ //       return $this->precio_unitario * $this->cantidad;
+ //   }
 }

@@ -8,6 +8,7 @@ import { Link } from '@inertiajs/vue3';
 import { BookOpen, Folder, LayoutGrid } from 'lucide-vue-next';
 import AppLogo from './AppLogo.vue';
 import { ShoppingCart } from 'lucide-vue-next';
+import { ClipboardMinus } from 'lucide-vue-next';
 import { CalendarCog } from 'lucide-vue-next';
 import { Users } from 'lucide-vue-next';
 import { ChartColumnStacked } from 'lucide-vue-next';
@@ -37,6 +38,12 @@ const mainNavItems: NavItem[] = [
         title: 'Ventas',
         href: '/ventas',
         icon: Users,
+    },
+     {
+        title: 'Reportes',
+        href: '/reportes',
+        icon: ClipboardMinus,
+       
     },
    
   

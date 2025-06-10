@@ -88,4 +88,11 @@ class CategoriaController extends Controller
         return redirect()->route('categorias.index')
             ->with('success', 'Categoría eliminada exitosamente');
     }
+
+    //funcion de categorias con sus productos asociados (api)
+    public function categoriasConProductos()
+    {
+        $categorias = \App\Models\Categoria::with('productos')->get();
+        return response()->json($categorias);
+    }
 }

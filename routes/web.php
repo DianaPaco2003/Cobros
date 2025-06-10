@@ -4,16 +4,18 @@ use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 use App\Http\Controllers\ProductoController;
 use App\Http\Controllers\CategoriaController;
+use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\ReporteController;
 use App\Http\Controllers\UsuarioController;
 use App\Http\Controllers\VentaController;
+use App\Models\Producto;
+use Barryvdh\DomPDF\Facade\Pdf;
 
 Route::get('/', function () {
     return Inertia::render('Welcome');
 })->name('home');
 
-Route::get('dashboard', function () {
-    return Inertia::render('Dashboard');
-})->middleware(['auth', 'verified'])->name('dashboard');
+Route::get('/dashboard', [DashboardController::class, 'dashboard'])->name('dashboard');
 
 Route::middleware(['auth', 'verified'])->group(function(){
     Route::get('/productos', [ProductoController::class, 'index'])->name('productos.index');
@@ -37,6 +39,14 @@ Route::middleware(['auth', 'verified'])->group(function(){
 
      // Rutas para el módulo de ventas
      Route::resource('ventas', VentaController::class);
+
+
+    // Rutas para el módulo de reportes
+    Route::resource('reportes', ReporteController::class);
+
+    Route::get('/pdf', [ReporteController::class, 'exportPdf'])->name('reportes.pdf');
+    // Rutas para el módulo de reportes
+    Route::get('/reportes', [ReporteController::class, 'index'])->name('reportes.index');
 });
 
 require __DIR__.'/settings.php';

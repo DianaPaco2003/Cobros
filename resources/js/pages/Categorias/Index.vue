@@ -1,33 +1,33 @@
 <template>
   <div class="container mx-auto px-4 py-8">
     <div class="flex justify-between items-center mb-6">
-      <h1 class="text-3xl font-bold text-pink-700">Lista de Cobro</h1>
-      <Link :href="route('categorias.create')" class="bg-pink-400 text-white px-4 py-2 rounded-lg shadow-md hover:bg-pink-500 transition">
+      <h1 class="text-3xl font-bold text-blue-700">Lista de Cobro</h1>
+      <Link :href="route('categorias.create')" class="bg-blue-500 text-white px-4 py-2 rounded-lg shadow-md hover:bg-blue-600 transition">
         Crear Categoría
       </Link>
     </div>
 
-    <div class="bg-pink-50 shadow-lg rounded-xl overflow-hidden border border-pink-200">
+    <div class="bg-blue-50 shadow-lg rounded-xl overflow-hidden border border-blue-200">
       <table class="min-w-full">
-        <thead class="bg-pink-100 text-pink-800">
+        <thead class="bg-blue-100 text-blue-800">
           <tr>
-            <th class="px-6 py-3 text-left text-sm font-semibold uppercase tracking-wide">Nombre</th>
-            <th class="px-6 py-3 text-left text-sm font-semibold uppercase tracking-wide">Descripción</th>
+            <th class="px-6 py-3 text-left text-sm font-semibold uppercase tracking-wide">fecha del cobro</th>
+            <th class="px-6 py-3 text-left text-sm font-semibold uppercase tracking-wide">Descripción del cobro</th>
             <th class="px-6 py-3 text-left text-sm font-semibold uppercase tracking-wide">Acciones</th>
           </tr>
         </thead>
-        <tbody class="divide-y divide-pink-200">
-          <tr v-for="categoria in categorias.data" :key="categoria.id" class="hover:bg-pink-100 transition">
-            <td class="px-6 py-4 text-pink-900 font-medium">{{ categoria.nombre }}</td>
-            <td class="px-6 py-4 text-pink-900">{{ categoria.descripcion }}</td>
+        <tbody class="divide-y divide-blue-200">
+          <tr v-for="categoria in categorias.data" :key="categoria.id" class="hover:bg-blue-100 transition">
+            <td class="px-6 py-4 text-blue-900 font-medium">{{ categoria.nombre }}</td>
+            <td class="px-6 py-4 text-blue-900">{{ categoria.descripcion }}</td>
             <td class="px-6 py-4 flex gap-3">
-              <Link :href="route('categorias.show', categoria.id)" class="text-purple-500 hover:text-purple-700 transition" title="Ver">
+              <Link :href="route('categorias.show', categoria.id)" class="text-blue-500 hover:text-blue-700 transition" title="Ver">
                 <Eye class="w-5 h-5" />
               </Link>
-              <Link :href="route('categorias.edit', categoria.id)" class="text-pink-500 hover:text-pink-700 transition" title="Editar">
+              <Link :href="route('categorias.edit', categoria.id)" class="text-blue-500 hover:text-blue-700 transition" title="Editar">
                 <Pencil class="w-5 h-5" />
               </Link>
-              <button @click="confirmDelete(categoria)" class="text-red-400 hover:text-red-600 transition" title="Eliminar">
+              <button @click="confirmDelete(categoria)" class="text-red-500 hover:text-red-700 transition" title="Eliminar">
                 <Trash2 class="w-5 h-5" />
               </button>
             </td>
