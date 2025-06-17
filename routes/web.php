@@ -10,6 +10,11 @@ use App\Http\Controllers\UsuarioController;
 use App\Http\Controllers\VentaController;
 use App\Models\Producto;
 use Barryvdh\DomPDF\Facade\Pdf;
+use App\Exports\VentasExport;
+use Maatwebsite\Excel\Facades\Excel;
+use App\Exports\ClientesExport;
+use App\Exports\VendedoresExport;
+use Illuminate\Http\Request;
 
 Route::get('/', function () {
     return Inertia::render('Welcome');
@@ -42,12 +47,151 @@ Route::middleware(['auth', 'verified'])->group(function(){
 
 
     // Rutas para el módulo de reportes
-    Route::resource('reportes', ReporteController::class);
+
 
     Route::get('/pdf', [ReporteController::class, 'exportPdf'])->name('reportes.pdf');
     // Rutas para el módulo de reportes
     Route::get('/reportes', [ReporteController::class, 'index'])->name('reportes.index');
+    Route::get('/xls', function (\Illuminate\Http\Request $request) {
+        $fechaInicio = $request->input('fechaInicio');
+        $fechaFin = $request->input('fechaFin');
+        return Excel::download(new VentasExport($fechaInicio, $fechaFin), 'ventas.xlsx');
+    });
+    // Rutas para el módulo de ventas
+    Route::resource('ventas', VentaController::class);
+    Route::resource('reportes', ReporteController::class);
+    Route::get('/pdf', [ReporteController::class, 'exportPdf'])->name('reportes.pdf');
+
+    Route::get('/reporte/fecha', function() {
+        return Inertia::render('Reportes/ReporteFecha', [
+            'ventas' => \App\Models\Venta::all()
+        ]);
+    });
+Route::resource('reportes', ReporteController::class);
+    Route::resource('/reportes/fecha', ReporteController::class);
+
+    Route::get('/pdf', function (\Illuminate\Http\Request $request) {
+        $query = \App\Models\Venta::query();
+        if ($request->filled('fechaInicio')) {
+            $query->whereDate('fecha_registro', '>=', $request->fechaInicio);
+        }
+        if ($request->filled('fechaFin')) {
+            $query->whereDate('fecha_registro', '<=', $request->fechaFin);
+        }
+        $ventas = $query->orderBy('fecha_registro', 'desc')->get();
+        $total = $ventas->sum('total');
+        $pdf = \Barryvdh\DomPDF\Facade\Pdf::loadView('pdf', compact('ventas', 'total'));
+        return $pdf->stream('reporte_ventas.pdf');
+    })->name('reportes.pdf');
+
+
+    Route::get('/pdf', function (\Illuminate\Http\Request $request) {
+        $query = \App\Models\Venta::query();
+        if ($request->filled('fechaInicio')) {
+            $query->whereDate('fecha_registro', '>=', $request->fechaInicio);
+        }
+        if ($request->filled('fechaFin')) {
+            $query->whereDate('fecha_registro', '<=', $request->fechaFin);
+        }
+        $ventas = $query->orderBy('fecha_registro', 'desc')->get();
+        $total = $ventas->sum('total');
+        $pdf = \Barryvdh\DomPDF\Facade\Pdf::loadView('pdf', compact('ventas', 'total'));
+        return $pdf->stream('reporte_ventas.pdf');
+    })->name('reportes.pdf');
+
+
+Route::get('/xls', function (\Illuminate\Http\Request $request) {
+        $fechaInicio = $request->input('fechaInicio');
+        $fechaFin = $request->input('fechaFin');
+        return Excel::download(new VentasExport($fechaInicio, $fechaFin), 'ventas.xlsx');
+    });
+
+    // reportes 
+       Route::get('/reporte/cliente', function(\Illuminate\Http\Request $request) {
+        $query = \App\Models\Venta::query();
+        $clientes = $query->select('cliente_nombre', \DB::raw('SUM(total) as total'), \DB::raw('COUNT(*) as cantidad'))
+            ->groupBy('cliente_nombre')
+            ->get();
+        return Inertia::render('Reportes/ReporteCliente', [
+            'clientes' => $clientes
+        ]);
+    });
+    Route::get('/reporte/vendedor', function(\Illuminate\Http\Request $request) {
+        $query = \App\Models\Venta::query();
+        $vendedores = $query->select('usuario_id', \DB::raw('SUM(total) as total'), \DB::raw('COUNT(*) as cantidad'))
+            ->groupBy('usuario_id')
+            ->with('usuario')
+            ->get();
+        return Inertia::render('Reportes/ReporteVendedor', [
+            'vendedores' => $vendedores
+        ]);
+    });
+    Route::resource('reportes', ReporteController::class);
+    Route::resource('/reportes/fecha', ReporteController::class);
+
+    Route::get('/pdf', function (\Illuminate\Http\Request $request) {
+        $query = \App\Models\Venta::query();
+        if ($request->filled('fechaInicio')) {
+            $query->whereDate('fecha_registro', '>=', $request->fechaInicio);
+        }
+        if ($request->filled('fechaFin')) {
+            $query->whereDate('fecha_registro', '<=', $request->fechaFin);
+        }
+        $ventas = $query->orderBy('fecha_registro', 'desc')->get();
+        $total = $ventas->sum('total');
+        $pdf = \Barryvdh\DomPDF\Facade\Pdf::loadView('pdf', compact('ventas', 'total'));
+        return $pdf->stream('reporte_ventas.pdf');
+    })->name('reportes.pdf');
+
+    Route::get('/pdf-clientes', function (\Illuminate\Http\Request $request) {
+        $query = \App\Models\Venta::query();
+        if ($request->filled('busqueda')) {
+            $query->where('cliente_nombre', 'like', '%' . $request->busqueda . '%');
+        }
+        $clientes = $query->select('cliente_nombre', \DB::raw('SUM(total) as total'), \DB::raw('COUNT(*) as cantidad'))
+            ->groupBy('cliente_nombre')
+            ->get();
+        $total = $clientes->sum('total');
+        $pdf = \Barryvdh\DomPDF\Facade\Pdf::loadView('pdf_clientes', compact('clientes', 'total'));
+        return $pdf->stream('reporte_clientes.pdf');
+    })->name('reportes.pdf_clientes');
+
+    Route::get('/pdf-vendedores', function (\Illuminate\Http\Request $request) {
+        $query = \App\Models\Venta::query();
+        if ($request->filled('busqueda')) {
+            $query->whereHas('usuario', function($q) use ($request) {
+                $q->where('nombre', 'like', '%' . $request->busqueda . '%');
+            });
+        }
+        $vendedores = $query->select('usuario_id', \DB::raw('SUM(total) as total'), \DB::raw('COUNT(*) as cantidad'))
+            ->groupBy('usuario_id')
+            ->with('usuario')
+            ->get();
+        $total = $vendedores->sum('total');
+        $pdf = \Barryvdh\DomPDF\Facade\Pdf::loadView('pdf_vendedores', compact('vendedores', 'total'));
+        return $pdf->stream('reporte_vendedores.pdf');
+    })->name('reportes.pdf_vendedores');
+
+    Route::get('/xls', function (\Illuminate\Http\Request $request) {
+        $fechaInicio = $request->input('fechaInicio');
+        $fechaFin = $request->input('fechaFin');
+        return Excel::download(new VentasExport($fechaInicio, $fechaFin), 'ventas.xlsx');
+    });
+
+    Route::get('/xls-clientes', function (\Illuminate\Http\Request $request) {
+        $busqueda = $request->input('busqueda');
+        return Excel::download(new ClientesExport($busqueda), 'clientes.xlsx');
+    });
+
+    Route::get('/xls-vendedores', function (\Illuminate\Http\Request $request) {
+        $busqueda = $request->input('busqueda');
+        return Excel::download(new VendedoresExport($busqueda), 'vendedores.xlsx');
+    });
+
 });
+
+
+
 
 require __DIR__.'/settings.php';
 require __DIR__.'/auth.php';

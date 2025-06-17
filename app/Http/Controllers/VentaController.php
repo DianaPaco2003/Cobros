@@ -10,6 +10,7 @@ use App\Models\DetalleVenta;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;//exportacion
 use Inertia\Inertia;
+use Maatwebsite\Excel\Facades\Excel;
 
 class VentaController extends Controller
 {

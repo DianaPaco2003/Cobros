@@ -1,89 +1,71 @@
 <!DOCTYPE html>
-<html lang="es">
+<html>
 <head>
-    <meta charset="UTF-8">
     <title>Reporte de Ventas</title>
     <style>
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: #f9f9f9;
-            color: #333;
-            padding: 40px;
+            font-family: 'DejaVu Sans', sans-serif;
+            background-color: #ffffff;
+            color: #000000;
+            padding: 20px;
         }
 
-        .header {
+        .header-row {
             display: flex;
-            flex-direction: column;
+            justify-content: space-between;
             align-items: center;
-            margin-bottom: 30px;
+            position: relative;
+            margin-bottom: 40px;
         }
 
-        h2 {
-            font-size: 28px;
+        .header-row h2,
+        .header-row h3 {
+            color: #0d47a1;
             margin: 0;
-            color: #2c3e50;
-            text-align: center;
+            z-index: 1;
         }
 
-        .fecha {
-            font-size: 14px;
-            color: #7f8c8d;
-            margin-top: 4px;
-            text-align: center;
-        }
+        
 
         table {
             width: 100%;
             border-collapse: collapse;
-            margin-top: 20px;
-            box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+            box-shadow: 0 2px 8px rgba(13, 71, 161, 0.2);
         }
 
-        th {
-            background-color: #34495e;
-            color: white;
+        th, td {
+            border: 1px solid #0d47a1;
             padding: 10px;
             text-align: left;
         }
 
-        td {
-            border-bottom: 1px solid #ddd;
-            padding: 10px;
-            font-size: 15px;
+        th {
+            background-color: #e3f2fd;
+            color: #0d47a1;
+            text-transform: uppercase;
         }
 
         tr:nth-child(even) {
-            background-color: #f2f2f2;
+            background-color: #f4f9ff;
         }
 
         tr:hover {
-            background-color: #ecf0f1;
-        }
-
-        .footer {
-            margin-top: 40px;
-            text-align: right;
-            font-size: 16px;
-            color: #2c3e50;
-            border-top: 2px solid #ccc;
-            padding-top: 15px;
-        }
-
-        .footer strong {
-            color: #2980b9;
+            background-color: #e1f5fe;
         }
     </style>
 </head>
 <body>
-    <div class="header">
+
+    <div class="header-row">
         <h2>Reporte de Ventas</h2>
-        <div class="fecha">{{ date('d/m/Y H:i') }}</div>
+        <div class="diagonal-line"></div>
+        <h3>Suma total: {{ $total }}</h3>
     </div>
 
     <table>
         <thead>
             <tr>
-                <th>N°</th>
+                <th>Nr</th>
                 <th>Cliente</th>
                 <th>Total</th>
                 <th>Fecha</th>
@@ -94,15 +76,12 @@
             <tr>
                 <td>{{ $loop->iteration }}</td>
                 <td>{{ $venta->cliente_nombre }}</td>
-                <td>{{ number_format($venta->total, 2) }} Bs.</td>
+                <td>{{ $venta->total }}</td>
                 <td>{{ $venta->fecha_registro }}</td>
             </tr>
             @endforeach
         </tbody>
     </table>
 
-    <div class="footer">
-        <strong>Total de ventas realizadas:</strong> {{ number_format($totalGeneral, 2) }} Bs.
-    </div>
 </body>
 </html>

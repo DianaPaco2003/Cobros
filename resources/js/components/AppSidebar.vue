@@ -1,17 +1,22 @@
 <script setup lang="ts">
-import NavFooter from '@/components/NavFooter.vue';
+import { ref } from 'vue';
 import NavMain from '@/components/NavMain.vue';
 import NavUser from '@/components/NavUser.vue';
-import { Sidebar, SidebarContent, SidebarFooter, SidebarHeader, SidebarMenu, SidebarMenuButton, SidebarMenuItem } from '@/components/ui/sidebar';
+import {
+  Sidebar,
+  SidebarContent,
+  SidebarFooter,
+  SidebarHeader,
+  SidebarMenu,
+  SidebarMenuButton,
+  SidebarMenuItem
+} from '@/components/ui/sidebar';
 import { type NavItem } from '@/types';
 import { Link } from '@inertiajs/vue3';
-import { BookOpen, Folder, LayoutGrid } from 'lucide-vue-next';
+import { BookOpen, Folder, LayoutGrid, ShoppingCart, Users, ChartColumnStacked, FileText, UserCheck, UserCog } from 'lucide-vue-next';
 import AppLogo from './AppLogo.vue';
-import { ShoppingCart } from 'lucide-vue-next';
-import { ClipboardMinus } from 'lucide-vue-next';
-import { CalendarCog } from 'lucide-vue-next';
-import { Users } from 'lucide-vue-next';
-import { ChartColumnStacked } from 'lucide-vue-next';
+
+
 
 const mainNavItems: NavItem[] = [
     {
@@ -39,13 +44,28 @@ const mainNavItems: NavItem[] = [
         href: '/ventas',
         icon: Users,
     },
-     {
+    {
         title: 'Reportes',
         href: '/reportes',
-        icon: ClipboardMinus,
-       
-    },
-   
+        icon: Users,
+        children: [
+            {
+                title: 'Por Fecha',
+                href: '/reporte/fecha',
+                icon: FileText,
+            },
+            {
+                title: 'Por Cliente',
+                href: '/reporte/cliente',
+                icon: UserCheck,
+            },
+            {
+                title: 'Por Vendedor',
+                href: '/reporte/vendedor',
+                icon: UserCog,
+            },
+        ],
+    }
   
 ];
 

@@ -5,10 +5,9 @@ namespace App\Http\Controllers;
 use App\Models\Venta;
 use App\Models\Producto;
 use App\Models\DetalleVenta;
-use Barryvdh\DomPDF\Facade\Pdf;
-
 use Illuminate\Http\Request;
 use Inertia\Inertia;
+use Barryvdh\DomPDF\Facade\Pdf;
 
 class ReporteController extends Controller
 {
@@ -70,22 +69,18 @@ class ReporteController extends Controller
     {
         //
     }
+    public function exportPdf()
+    {
+        try{
+            ini_set('max_execution_time',120);
+            ini_set('memory_limit','512M');
+            $ventas=Venta::orderBy('fecha_registro','desc')->get();
+            $total=$ventas->sum('total');
+            $pdf=\Barryvdh\DomPDF\Facade\Pdf::loadView('pdf',compact('ventas','total'));
+            return $pdf->stream('reporte_ventas.pdf');
+        }catch(\Exception $e){
+            return response($e->getMessage(),500);  
 
-public function exportPdf()
-{
-    try {
-        ini_set('max_execution_time', 120); 
-        ini_set('memory_limit', '512M');
-
-        $ventas = Venta::orderBy('fecha_registro', 'desc')->get();
-        $totalGeneral = $ventas->sum('total');
-
-        $pdf = Pdf::loadView('pdf', compact('ventas', 'totalGeneral'));
-        return $pdf->stream('reporte_ventas.pdf');
-    } catch (\Exception $e) {
-        return response($e->getMessage(), 500);
+        }
     }
-}
-
-    
 }
